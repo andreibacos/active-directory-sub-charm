@@ -1,0 +1,21 @@
+name: active-directory-sub
+summary: "Active Directory subordinate charm"
+maintainers: [ "Andrei Bacos <abacos@cloudbasesolutions.com>" ]
+description: Subordinate charm for active directory for situations where an external AD will be used that was not deployed with active-directory main charm.
+tags:
+  - active-directory
+  - windows
+categories:
+  - windows
+series:
+  - win2016hv
+  - win2016
+subordinate: true
+provides:
+  ad-sub:
+    interface: ad-sub
+    scope: container
+requires:
+  general-info:
+    interface: juju-info
+    scope: container
