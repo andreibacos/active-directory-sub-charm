@@ -240,6 +240,8 @@ function Invoke-StopHook {
     Write-JujuWarning "External AD -> Leaving External AD domain: $domain"
     if (Confirm-IsInDomain $domain) {
         Remove-ADComputer -Identity $computer -Credential $credential -Confirm:$false -ErrorAction SilentlyContinue
+        Add-Computer -UnjoinDomainCredential $credential -WorkgroupName workgroup -force
+        Invoke-JujuReboot -Now
     }
 }
 
