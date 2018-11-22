@@ -235,13 +235,18 @@ function Invoke-InstallHook {
 function Invoke-StopHook {
     $credential = Get-ConfADCredential
     $domain = Get-ConfADDomain
-    $computer = Get-ADComputer -Credential $credential $(Get-ComputerName)
 
     Write-JujuWarning "External AD -> Leaving External AD domain: $domain"
     if (Confirm-IsInDomain $domain) {
-        Remove-ADComputer -Identity $computer -Credential $credential -Confirm:$false -ErrorAction SilentlyContinue
-        Add-Computer -UnjoinDomainCredential $credential -WorkgroupName workgroup -force
-        Invoke-JujuReboot -Now
+        try {
+            $computer = Get-ADComputer -Credential $credential $(Get-ComputerName)
+            $computer | Remove-ADObject -Credential $credential -Recursive -Confirm:$false
+            Add-Computer -UnjoinDomainCredential $credential -WorkgroupName workgroup -force
+            #Invoke-JujuReboot -Now
+        } catch {
+            Write-JujuWarning "Could not remove computer from AD, manual intervention may be needed"
+            Write-HookTracebackToLog $_
+        }
     }
 }
 
